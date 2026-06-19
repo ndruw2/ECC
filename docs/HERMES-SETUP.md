@@ -99,6 +99,27 @@ These stay local and should be configured per operator:
 5. Start with a small cron surface: readiness check, content accountability, inbox triage, revenue monitor.
 6. Only then add heavier personal workflows like health, relationship graphing, or outbound sequencing.
 
+## Automated ECC to Hermes Skill Sync
+
+The skill copy in step 2 and the config scaffold are automated from the ECC repo, so you no longer copy skills by hand.
+
+```bash
+# Copy ECC skills into ~/.hermes/skills/ecc-imports/ (all installed skills)
+node scripts/hermes-sync.js --all
+#   --skills a,b,c     sync only the named skills
+#   --source <dir>     source skills dir (default ~/.claude/skills/ecc)
+#   --hermes-home <d>  Hermes home (default ~/.hermes)
+#   --dry-run --json   preview or machine-readable output
+
+# Generate config.ecc.yaml with the ecc-imports skills path and MCP
+# registrations translated from mcp-configs/mcp-servers.json
+node scripts/hermes-config-init.js
+```
+
+`hermes-sync.js` copies each skill directory unchanged (`SKILL.md` plus any references, scripts, or templates) because `SKILL.md` is the portable unit. Re-run it after updating ECC to refresh the imports; it overwrites cleanly so deleted upstream files do not linger.
+
+`hermes-config-init.js` writes `~/.hermes/config.ecc.yaml` as an example to merge into your real `~/.hermes/config.yaml`. Secrets stay as placeholders such as `YOUR_TOKEN_HERE`; add your model-provider key and any MCP credentials locally before running Hermes.
+
 ## Related Docs
 
 - [Hermes/OpenClaw migration guide](HERMES-OPENCLAW-MIGRATION.md)
